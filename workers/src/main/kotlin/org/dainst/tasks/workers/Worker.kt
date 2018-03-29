@@ -1,9 +1,6 @@
 package org.dainst.tasks.workers
 
-import com.rabbitmq.client.AMQP
-import com.rabbitmq.client.ConnectionFactory
-import com.rabbitmq.client.DefaultConsumer
-import com.rabbitmq.client.Envelope
+import com.rabbitmq.client.*
 import java.nio.charset.Charset
 
 
@@ -12,11 +9,19 @@ val QUEUE_NAME = "tasks";
 fun main(args: Array<String>) {
 
     val factory = ConnectionFactory()
-    factory.host = "localhost"
-    factory.username = "user"
-    factory.password = "password"
-    factory.virtualHost = "task_queue"
-    val connection = factory.newConnection()
+    factory.host = System.getenv("BROKER_HOST") ?: "localhost"
+    factory.username = System.getenv("BROKER_USER") ?: "guest"
+    factory.password = System.getenv("BROKER_PASSWORD") ?: "guest"
+    factory.virtualHost = System.getenv("BROKER_VHOST") ?: "/"
+    var connection: Connection? = null;
+    while (connection == null) {
+        try {
+            connection = factory.newConnection()
+        } catch (e: Exception) {
+            println(" [ ] Connection to broker '${factory.host}' refused, reason: ${e.toString()}. Will retry in 1s ...")
+            Thread.sleep(1000)
+        }
+    }
     val channel = connection.createChannel()
 
     channel.queueDeclare(QUEUE_NAME, false, false, false, null)

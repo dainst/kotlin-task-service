@@ -14,10 +14,10 @@ class TaskController {
     @PostMapping("/hello")
     fun hello(): String {
         val factory = ConnectionFactory()
-        factory.host = "localhost"
-        factory.username = "user"
-        factory.password = "password"
-        factory.virtualHost = "task_queue"
+        factory.host = System.getenv("BROKER_HOST") ?: "localhost"
+        factory.username = System.getenv("BROKER_USER") ?: "guest"
+        factory.password = System.getenv("BROKER_PASSWORD") ?: "guest"
+        factory.virtualHost = System.getenv("BROKER_VHOST") ?: "/"
         val connection = factory.newConnection()
         val channel = connection.createChannel()
 
