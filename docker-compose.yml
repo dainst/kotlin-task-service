@@ -1,0 +1,18 @@
+version: '3.5'
+
+services:
+  task-broker:
+    image: rabbitmq:latest
+    container_name: ${BROKER_HOSTNAME}
+    environment:
+      - RABBITMQ_DEFAULT_USER=${BROKER_USER}
+      - RABBITMQ_DEFAULT_PASS=${BROKER_PASSWORD}
+      - RABBITMQ_DEFAULT_VHOST=${BROKER_VHOST}
+    ports:
+      - "5672:5672"
+    networks:
+      - network_1
+
+networks:
+  network_1:
+    name: ${NETWORK_NAME}
