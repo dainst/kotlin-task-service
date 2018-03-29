@@ -38,7 +38,9 @@ fun main(args: Array<String>) {
             println(" [x] Received '$message', faking workload ...")
             Thread.sleep(1000)
             println(" [x] Finished '$message'.")
+            if (envelope != null)
+                channel.basicAck(envelope.deliveryTag, false)
         }
     }
-    channel.basicConsume(QUEUE_NAME, true, consumer)
+    channel.basicConsume(QUEUE_NAME, false, consumer)
 }
