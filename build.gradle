@@ -1,5 +1,5 @@
 group "org.dainst"
-version "0.1.0"git
+version "0.1.0"
 
 buildscript {
     ext.kotlin_version = '1.2.31'
