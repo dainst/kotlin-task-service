@@ -35,7 +35,9 @@ fun main(args: Array<String>) {
             } else {
                 message = "Empty body";
             }
-            println(" [x] Received '$message'")
+            println(" [x] Received '$message', faking workload ...")
+            Thread.sleep(1000)
+            println(" [x] Finished '$message'.")
         }
     }
     channel.basicConsume(QUEUE_NAME, true, consumer)

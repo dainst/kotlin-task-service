@@ -3,6 +3,7 @@ package org.dainst.tasks.server
 import org.springframework.web.bind.annotation.*
 import com.rabbitmq.client.ConnectionFactory
 import java.nio.charset.Charset
+import java.util.*
 
 
 @RestController
@@ -11,8 +12,8 @@ class TaskController {
 
     val QUEUE_NAME = "tasks";
 
-    @PostMapping("/hello")
-    fun hello(): String {
+    @PostMapping("/create/{name}")
+    fun create(@PathVariable name: String): String {
         val factory = ConnectionFactory()
         factory.host = System.getenv("BROKER_HOST") ?: "localhost"
         factory.username = System.getenv("BROKER_USER") ?: "guest"
@@ -21,20 +22,22 @@ class TaskController {
         val connection = factory.newConnection()
         val channel = connection.createChannel()
 
+        val id = UUID.randomUUID()
+        val task = Task(id.toString(), name)
+
         channel.queueDeclare(QUEUE_NAME, false, false, false, null)
-        val message = "Hello World"
         channel.basicPublish(
                 "",
                 QUEUE_NAME,
                 null,
-                message.toByteArray(Charset.forName("UTF-8"))
+                task.toString().toByteArray(Charset.forName("UTF-8"))
         )
-        println(" [x] Sent '$message'")
+        println(" [x] Sent '$name'")
 
         channel.close()
         connection.close()
 
-        return message
+        return task.toString()
     }
 
     @GetMapping("/status/{id}")
