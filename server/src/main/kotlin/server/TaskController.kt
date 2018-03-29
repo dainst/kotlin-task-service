@@ -1,4 +1,4 @@
-package org.dainst.taskService
+package org.dainst.tasks.server
 
 import org.springframework.web.bind.annotation.*
 import com.rabbitmq.client.ConnectionFactory
