@@ -2,8 +2,8 @@ group "org.dainst"
 version "0.1.0"
 
 buildscript {
-    ext.kotlin_version = '1.2.31'
-    ext.spring_boot_version = "1.5.4.RELEASE"
+    ext.kotlin_version = "1.2.31"
+    ext.spring_boot_version = "2.0.0.RELEASE"
 
     repositories {
         jcenter()
@@ -30,8 +30,8 @@ repositories {
 dependencies {
     compile project(":common")
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile "org.springframework.boot:spring-boot-starter-web"
+    compile "org.springframework.boot:spring-boot-starter-web:$spring_boot_version"
     compile "com.rabbitmq:amqp-client:5.2.0"
     compile "com.google.code.gson:gson:2.8.2"
-    testCompile "org.springframework.boot:spring-boot-starter-test"
+    testCompile "org.springframework.boot:spring-boot-starter-test:$spring_boot_version"
 }
