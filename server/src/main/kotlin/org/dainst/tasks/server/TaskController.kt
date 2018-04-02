@@ -1,5 +1,6 @@
 package org.dainst.tasks.server
 
+import com.google.gson.Gson
 import org.springframework.web.bind.annotation.*
 import com.rabbitmq.client.ConnectionFactory
 import org.dainst.tasks.common.Task
@@ -31,14 +32,14 @@ class TaskController {
                 "",
                 QUEUE_NAME,
                 null,
-                task.toString().toByteArray(Charset.forName("UTF-8"))
+                Gson().toJson(task).toByteArray(Charset.forName("UTF-8"))
         )
         println(" [x] Sent '$name'")
 
         channel.close()
         connection.close()
 
-        return task.toString()
+        return Gson().toJson(task)
     }
 
     @GetMapping("/status/{id}")
