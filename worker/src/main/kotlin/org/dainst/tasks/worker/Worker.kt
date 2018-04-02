@@ -28,11 +28,10 @@ fun main(args: Array<String>) {
     val consumer = object : DefaultConsumer(channel) {
         override fun handleDelivery(consumerTag: String?, envelope: Envelope?, properties: AMQP.BasicProperties?, body: ByteArray?) {
             val task: Task;
-            if (body != null) {
-                val message = String(body, Charset.forName("UTF-8"))
-                task = Gson().fromJson(message, Task::class.java)
+            task = if (body != null) {
+                Gson().fromJson(String(body, Charset.forName("UTF-8")), Task::class.java)
             } else {
-                task = Task("","")
+                Task("","")
             }
             println(" [x] Received '${task.name}', faking workload ...")
             Thread.sleep(1000)
