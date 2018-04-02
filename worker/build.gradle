@@ -33,6 +33,7 @@ repositories {
 }
 
 dependencies {
+    compile project(":common")
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "com.rabbitmq:amqp-client:5.2.0"
 }
