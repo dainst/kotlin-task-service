@@ -4,23 +4,19 @@ import com.google.gson.Gson
 import com.rabbitmq.client.*
 import java.nio.charset.Charset
 import org.dainst.tasks.common.Task
+import org.dainst.tasks.common.createRabbitMqConnection
 
 
 val QUEUE_NAME = "tasks";
 
 fun main(args: Array<String>) {
 
-    val factory = ConnectionFactory()
-    factory.host = System.getenv("BROKER_HOST") ?: "localhost"
-    factory.username = System.getenv("BROKER_USER") ?: "guest"
-    factory.password = System.getenv("BROKER_PASSWORD") ?: "guest"
-    factory.virtualHost = System.getenv("BROKER_VHOST") ?: "/"
     var connection: Connection? = null;
     while (connection == null) {
         try {
-            connection = factory.newConnection()
+            connection = createRabbitMqConnection()
         } catch (e: Exception) {
-            println(" [ ] Connection to broker '${factory.host}' refused, reason: ${e.toString()}. Will retry in 1s ...")
+            println(" [ ] Connection to broker refused, reason: ${e.toString()}. Will retry in 1s ...")
             Thread.sleep(1000)
         }
     }

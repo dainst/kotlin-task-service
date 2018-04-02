@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import org.springframework.web.bind.annotation.*
 import com.rabbitmq.client.ConnectionFactory
 import org.dainst.tasks.common.Task
+import org.dainst.tasks.common.createRabbitMqConnection
 import java.nio.charset.Charset
 import java.util.*
 
@@ -16,12 +17,8 @@ class TaskController {
 
     @PostMapping("/create/{name}")
     fun create(@PathVariable name: String): String {
-        val factory = ConnectionFactory()
-        factory.host = System.getenv("BROKER_HOST") ?: "localhost"
-        factory.username = System.getenv("BROKER_USER") ?: "guest"
-        factory.password = System.getenv("BROKER_PASSWORD") ?: "guest"
-        factory.virtualHost = System.getenv("BROKER_VHOST") ?: "/"
-        val connection = factory.newConnection()
+
+        val connection = createRabbitMqConnection()
         val channel = connection.createChannel()
 
         val id = UUID.randomUUID()
