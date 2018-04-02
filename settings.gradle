@@ -1,4 +1,4 @@
 rootProject.name = 'kotlin-task-service'
 
 include 'server'
-include 'workers'
+include 'worker'

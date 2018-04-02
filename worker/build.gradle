@@ -18,10 +18,10 @@ apply plugin: "kotlin"
 apply plugin: "com.github.johnrengelman.shadow"
 apply plugin: "application"
 
-mainClassName = "org.dainst.tasks.workers.WorkerKt"
+mainClassName = "org.dainst.tasks.worker.WorkerKt"
 
 shadowJar {
-    archiveName = "workers.jar"
+    archiveName = "worker.jar"
 }
 
 assemble {

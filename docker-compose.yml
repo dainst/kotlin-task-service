@@ -22,7 +22,7 @@ services:
       BROKER_VHOST: ${BROKER_VHOST}
 
   task-worker:
-    build: ./workers
+    build: ./worker
     environment:
       BROKER_HOST: "task-broker"
       BROKER_USER: ${BROKER_USER}

@@ -1,4 +1,4 @@
-package org.dainst.tasks.workers
+package org.dainst.tasks.worker
 
 import com.rabbitmq.client.*
 import java.nio.charset.Charset
