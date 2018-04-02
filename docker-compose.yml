@@ -11,6 +11,11 @@ services:
     ports:
       - "5672:5672"
 
+  task-db:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+
   task-server:
     build: ./server
     ports:
