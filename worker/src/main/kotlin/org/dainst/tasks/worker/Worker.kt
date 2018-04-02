@@ -1,7 +1,9 @@
 package org.dainst.tasks.worker
 
+import com.google.gson.Gson
 import com.rabbitmq.client.*
 import java.nio.charset.Charset
+import org.dainst.tasks.common.Task
 
 
 val QUEUE_NAME = "tasks";
@@ -29,15 +31,16 @@ fun main(args: Array<String>) {
 
     val consumer = object : DefaultConsumer(channel) {
         override fun handleDelivery(consumerTag: String?, envelope: Envelope?, properties: AMQP.BasicProperties?, body: ByteArray?) {
-            val message: String;
+            val task: Task;
             if (body != null) {
-                message = String(body, Charset.forName("UTF-8"))
+                val message = String(body, Charset.forName("UTF-8"))
+                task = Gson().fromJson(message, Task::class.java)
             } else {
-                message = "Empty body";
+                task = Task("","")
             }
-            println(" [x] Received '$message', faking workload ...")
+            println(" [x] Received '$task', faking workload ...")
             Thread.sleep(1000)
-            println(" [x] Finished '$message'.")
+            println(" [x] Finished '$task'.")
             if (envelope != null)
                 channel.basicAck(envelope.deliveryTag, false)
         }
