@@ -38,9 +38,9 @@ fun main(args: Array<String>) {
             } else {
                 task = Task("","")
             }
-            println(" [x] Received '$task', faking workload ...")
+            println(" [x] Received '${task.name}', faking workload ...")
             Thread.sleep(1000)
-            println(" [x] Finished '$task'.")
+            println(" [x] Finished '${task.name}'.")
             if (envelope != null)
                 channel.basicAck(envelope.deliveryTag, false)
         }
