@@ -1,3 +1,5 @@
 package org.dainst.tasks.common
 
-data class Task(val id: String, val name: String, val status: String = "new")
+import org.springframework.data.annotation.Id
+
+data class Task(@Id val id: String, val name: String, val status: String = "new")

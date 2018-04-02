@@ -4,41 +4,61 @@ import com.google.gson.Gson
 import com.rabbitmq.client.*
 import java.nio.charset.Charset
 import org.dainst.tasks.common.Task
+import org.dainst.tasks.common.TaskRepository
+import org.dainst.tasks.common.TaskService
 import org.dainst.tasks.common.createRabbitMqConnection
+import org.springframework.boot.CommandLineRunner
+import org.springframework.boot.SpringApplication
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.context.annotation.Bean
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories
 
 
 val QUEUE_NAME = "tasks";
 
-fun main(args: Array<String>) {
+@SpringBootApplication(scanBasePackages = ["org.dainst.tasks.common"])
+@EnableMongoRepositories("org.dainst.tasks.common")
+class Worker {
 
-    var connection: Connection? = null;
-    while (connection == null) {
-        try {
-            connection = createRabbitMqConnection()
-        } catch (e: Exception) {
-            println(" [ ] Connection to broker refused, reason: ${e.toString()}. Will retry in 1s ...")
-            Thread.sleep(1000)
-        }
-    }
-    val channel = connection.createChannel()
+    @Bean
+    fun init(taskService: TaskService) = CommandLineRunner {
 
-    channel.queueDeclare(QUEUE_NAME, false, false, false, null)
-    println(" [*] Waiting for messages. To exit press CTRL+C")
-
-    val consumer = object : DefaultConsumer(channel) {
-        override fun handleDelivery(consumerTag: String?, envelope: Envelope?, properties: AMQP.BasicProperties?, body: ByteArray?) {
-            val task: Task;
-            task = if (body != null) {
-                Gson().fromJson(String(body, Charset.forName("UTF-8")), Task::class.java)
-            } else {
-                Task("","")
+        var connection: Connection? = null;
+        while (connection == null) {
+            try {
+                connection = createRabbitMqConnection()
+            } catch (e: Exception) {
+                println(" [ ] Connection to broker refused, reason: ${e.toString()}. Will retry in 1s ...")
+                Thread.sleep(1000)
             }
-            println(" [x] Received '${task.name}', faking workload ...")
-            Thread.sleep(10000)
-            println(" [x] Finished '${task.name}'.")
-            if (envelope != null)
-                channel.basicAck(envelope.deliveryTag, false)
         }
+        val channel = connection.createChannel()
+
+        channel.queueDeclare(QUEUE_NAME, false, false, false, null)
+        println(" [*] Waiting for messages. To exit press CTRL+C")
+
+        val consumer = object : DefaultConsumer(channel) {
+            override fun handleDelivery(consumerTag: String?, envelope: Envelope?, properties: AMQP.BasicProperties?, body: ByteArray?) {
+                var task: Task;
+                task = if (body != null) {
+                    Gson().fromJson(String(body, Charset.forName("UTF-8")), Task::class.java)
+                } else {
+                    Task("","")
+                }
+                task = taskService.save(task.copy(status = "running"))
+                println(" [x] Received '${task}', faking workload ...")
+                Thread.sleep(10000)
+                task = taskService.save(task.copy(status = "finished"))
+                println(" [x] Finished '${task}'.")
+                if (envelope != null)
+                    channel.basicAck(envelope.deliveryTag, false)
+            }
+        }
+        channel.basicConsume(QUEUE_NAME, false, consumer)
     }
-    channel.basicConsume(QUEUE_NAME, false, consumer)
+
+}
+
+fun main(args: Array<String>) {
+    SpringApplication.run(Worker::class.java, *args)
 }

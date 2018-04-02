@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import org.springframework.web.bind.annotation.*
 import org.dainst.tasks.common.Task
 import org.dainst.tasks.common.TaskRepository
+import org.dainst.tasks.common.TaskService
 import org.dainst.tasks.common.createRabbitMqConnection
 import org.springframework.beans.factory.annotation.Autowired
 import java.nio.charset.Charset
@@ -17,7 +18,7 @@ class TaskController {
     val QUEUE_NAME = "tasks";
 
     @Autowired
-    lateinit var taskRepository: TaskRepository
+    lateinit var taskService: TaskService
 
     @PostMapping("/create/{name}")
     fun create(@PathVariable name: String): String {
@@ -27,7 +28,7 @@ class TaskController {
 
         val id = UUID.randomUUID()
         val task = Task(id.toString(), name)
-        taskRepository.save(task)
+        taskService.save(task)
 
         channel.queueDeclare(QUEUE_NAME, false, false, false, null)
         channel.basicPublish(

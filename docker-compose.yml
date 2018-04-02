@@ -25,6 +25,7 @@ services:
       BROKER_USER: ${BROKER_USER}
       BROKER_PASSWORD: ${BROKER_PASSWORD}
       BROKER_VHOST: ${BROKER_VHOST}
+      DB_HOST: "task-db"
 
   task-worker:
     build: ./worker
@@ -33,3 +34,4 @@ services:
       BROKER_USER: ${BROKER_USER}
       BROKER_PASSWORD: ${BROKER_PASSWORD}
       BROKER_VHOST: ${BROKER_VHOST}
+      DB_HOST: "task-db"
