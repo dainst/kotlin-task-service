@@ -46,9 +46,10 @@ class TaskController {
     }
 
     @GetMapping("/status/{id}")
-    fun status(@PathVariable id: String,
-             @RequestParam(value = "name", defaultValue = "DefaultTask") name: String
-    ) = Task(id, name)
+    fun status(@PathVariable id: String): String {
+        val task = taskService.get(id)
+        return Gson().toJson(task)
+    }
 
 
 }
