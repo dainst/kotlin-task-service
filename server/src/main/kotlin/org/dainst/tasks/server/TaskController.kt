@@ -2,6 +2,7 @@ package org.dainst.tasks.server
 
 import org.springframework.web.bind.annotation.*
 import com.rabbitmq.client.ConnectionFactory
+import org.dainst.tasks.common.Task
 import java.nio.charset.Charset
 import java.util.*
 
