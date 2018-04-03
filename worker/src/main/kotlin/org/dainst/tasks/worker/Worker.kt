@@ -21,6 +21,7 @@ class Worker {
 
         val channel = establishRabbitMqChannel()
         channel.basicConsume(QUEUE_NAME, false, TaskConsumer(channel, taskRunner))
+        channel.basicQos(1)
 
         println(" [*] Waiting for messages. To exit press CTRL+C")
     }
