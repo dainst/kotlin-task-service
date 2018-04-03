@@ -10,17 +10,17 @@ import org.springframework.context.annotation.Bean
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories
 
 
-val QUEUE_NAME = "tasks";
+const val QUEUE_NAME = "tasks";
 
-@SpringBootApplication(scanBasePackages = ["org.dainst.tasks.common"])
+@SpringBootApplication(scanBasePackages = ["org.dainst.tasks.common", "org.dainst.tasks.worker"])
 @EnableMongoRepositories("org.dainst.tasks.common")
 class Worker {
 
     @Bean
-    fun init(taskService: TaskService) = CommandLineRunner {
+    fun init(taskRunner: TaskRunner) = CommandLineRunner {
 
         val channel = establishRabbitMqChannel()
-        channel.basicConsume(QUEUE_NAME, false, TaskConsumer(channel, taskService))
+        channel.basicConsume(QUEUE_NAME, false, TaskConsumer(channel, taskRunner))
 
         println(" [*] Waiting for messages. To exit press CTRL+C")
     }
