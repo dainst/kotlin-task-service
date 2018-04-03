@@ -16,10 +16,10 @@ Run multiple worker instances with
     
 Create multiple tasks
 
-    curl -XPOST http://localhost:8080/task/create/test1
-    curl -XPOST http://localhost:8080/task/create/test2
-    curl -XPOST http://localhost:8080/task/create/test3
-    curl -XPOST http://localhost:8080/task/create/test4
-    curl -XPOST http://localhost:8080/task/create/test5
+    curl -XPOST http://localhost:8080/task/create/fake
+    curl -XPOST http://localhost:8080/task/create/fake
+    curl -XPOST http://localhost:8080/task/create/fake
+    curl -XPOST http://localhost:8080/task/create/fake
+    curl -XPOST http://localhost:8080/task/create/fake
     
 You should now see that different workers pick up the tasks.
