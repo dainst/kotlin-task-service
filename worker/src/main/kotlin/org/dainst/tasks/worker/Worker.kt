@@ -7,6 +7,7 @@ import org.dainst.tasks.common.Task
 import org.dainst.tasks.common.TaskRepository
 import org.dainst.tasks.common.TaskService
 import org.dainst.tasks.common.createRabbitMqConnection
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -23,7 +24,15 @@ class Worker {
     @Bean
     fun init(taskService: TaskService) = CommandLineRunner {
 
-        var connection: Connection? = null;
+        val channel = establishRabbitMqChannel()
+        channel.basicConsume(QUEUE_NAME, false, TaskConsumer(channel, taskService))
+
+        println(" [*] Waiting for messages. To exit press CTRL+C")
+    }
+
+    private fun establishRabbitMqChannel(): Channel {
+
+        var connection: Connection? = null
         while (connection == null) {
             try {
                 connection = createRabbitMqConnection()
@@ -33,28 +42,28 @@ class Worker {
             }
         }
         val channel = connection.createChannel()
-
         channel.queueDeclare(QUEUE_NAME, false, false, false, null)
-        println(" [*] Waiting for messages. To exit press CTRL+C")
+        return channel
+    }
 
-        val consumer = object : DefaultConsumer(channel) {
-            override fun handleDelivery(consumerTag: String?, envelope: Envelope?, properties: AMQP.BasicProperties?, body: ByteArray?) {
-                var task: Task;
-                task = if (body != null) {
-                    Gson().fromJson(String(body, Charset.forName("UTF-8")), Task::class.java)
-                } else {
-                    Task("","")
-                }
-                task = taskService.save(task.copy(status = "running"))
-                println(" [x] Received '${task}', faking workload ...")
-                Thread.sleep(10000)
-                task = taskService.save(task.copy(status = "finished"))
-                println(" [x] Finished '${task}'.")
-                if (envelope != null)
-                    channel.basicAck(envelope.deliveryTag, false)
+    private class TaskConsumer(channel: Channel, val taskService: TaskService) : DefaultConsumer(channel) {
+
+        override fun handleDelivery(consumerTag: String?, envelope: Envelope?, properties: AMQP.BasicProperties?, body: ByteArray?) {
+
+            var task: Task;
+            task = if (body != null) {
+                Gson().fromJson(String(body, Charset.forName("UTF-8")), Task::class.java)
+            } else {
+                Task("","")
             }
+            task = taskService.save(task.copy(status = "running"))
+            println(" [x] Received '${task}', faking workload ...")
+            Thread.sleep(10000L)
+            task = taskService.save(task.copy(status = "finished"))
+            println(" [x] Finished '${task}'.")
+            if (envelope != null)
+                channel.basicAck(envelope.deliveryTag, false)
         }
-        channel.basicConsume(QUEUE_NAME, false, consumer)
     }
 
 }
