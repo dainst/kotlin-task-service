@@ -6,5 +6,6 @@ apply plugin: "kotlin"
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile "com.rabbitmq:amqp-client:5.2.0"
+    compile "com.google.code.gson:gson:2.8.2"
     compile "org.springframework.boot:spring-boot-starter-data-mongodb:$spring_boot_version"
 }

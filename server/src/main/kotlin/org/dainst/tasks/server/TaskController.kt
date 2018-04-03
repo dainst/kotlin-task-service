@@ -1,11 +1,7 @@
 package org.dainst.tasks.server
 
-import com.google.gson.Gson
+import org.dainst.tasks.common.*
 import org.springframework.web.bind.annotation.*
-import org.dainst.tasks.common.Task
-import org.dainst.tasks.common.TaskRepository
-import org.dainst.tasks.common.TaskService
-import org.dainst.tasks.common.createRabbitMqConnection
 import org.springframework.beans.factory.annotation.Autowired
 import java.nio.charset.Charset
 import java.util.*
@@ -35,20 +31,20 @@ class TaskController {
                 "",
                 QUEUE_NAME,
                 null,
-                Gson().toJson(task).toByteArray(Charset.forName("UTF-8"))
+                JsonUtil().toJson(task).toByteArray(Charset.forName("UTF-8"))
         )
         println(" [x] Sent '$name'")
 
         channel.close()
         connection.close()
 
-        return Gson().toJson(task)
+        return JsonUtil().toJson(task)
     }
 
     @GetMapping("/status/{id}")
     fun status(@PathVariable id: String): String {
         val task = taskService.get(id)
-        return Gson().toJson(task)
+        return JsonUtil().toJson(task)
     }
 
 

@@ -5,6 +5,7 @@ import com.rabbitmq.client.AMQP
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.DefaultConsumer
 import com.rabbitmq.client.Envelope
+import org.dainst.tasks.common.JsonUtil
 import org.dainst.tasks.common.Task
 import org.dainst.tasks.common.TaskService
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,6 +22,6 @@ class TaskConsumer(channel: Channel, private val taskRunner: TaskRunner) : Defau
 
     private fun readTask(body: ByteArray?): Task {
         if (body == null) throw Exception("Empty body")
-        return Gson().fromJson(String(body, Charset.forName("UTF-8")), Task::class.java)
+        return JsonUtil().fromJson(String(body, Charset.forName("UTF-8")))
     }
 }
