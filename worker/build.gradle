@@ -10,10 +10,6 @@ bootJar {
     archiveName = "worker.jar"
 }
 
-repositories {
-    jcenter()
-}
-
 dependencies {
     compile project(":common")
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"

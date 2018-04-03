@@ -3,10 +3,6 @@ version '0.1.0'
 
 apply plugin: "kotlin"
 
-repositories {
-    jcenter()
-}
-
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile "com.rabbitmq:amqp-client:5.2.0"
