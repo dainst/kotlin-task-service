@@ -1,13 +1,8 @@
 package org.dainst.tasks.worker
 
-import com.google.gson.Gson
 import com.rabbitmq.client.*
-import java.nio.charset.Charset
-import org.dainst.tasks.common.Task
-import org.dainst.tasks.common.TaskRepository
 import org.dainst.tasks.common.TaskService
 import org.dainst.tasks.common.createRabbitMqConnection
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -44,26 +39,6 @@ class Worker {
         val channel = connection.createChannel()
         channel.queueDeclare(QUEUE_NAME, false, false, false, null)
         return channel
-    }
-
-    private class TaskConsumer(channel: Channel, val taskService: TaskService) : DefaultConsumer(channel) {
-
-        override fun handleDelivery(consumerTag: String?, envelope: Envelope?, properties: AMQP.BasicProperties?, body: ByteArray?) {
-
-            var task: Task;
-            task = if (body != null) {
-                Gson().fromJson(String(body, Charset.forName("UTF-8")), Task::class.java)
-            } else {
-                Task("","")
-            }
-            task = taskService.save(task.copy(status = "running"))
-            println(" [x] Received '${task}', faking workload ...")
-            Thread.sleep(10000L)
-            task = taskService.save(task.copy(status = "finished"))
-            println(" [x] Finished '${task}'.")
-            if (envelope != null)
-                channel.basicAck(envelope.deliveryTag, false)
-        }
     }
 
 }
