@@ -1,6 +1,6 @@
 # Getting Started
 
-    gradle assemble
+    ./gradlew assemble
     docker-compose build
     docker-compose up
 
