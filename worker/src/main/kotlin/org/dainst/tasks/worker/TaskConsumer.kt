@@ -15,12 +15,21 @@ class TaskConsumer(channel: Channel, private val taskRunner: TaskRunner) : Defau
 
     override fun handleDelivery(consumerTag: String?, envelope: Envelope?, properties: AMQP.BasicProperties?, body: ByteArray?) {
 
-        taskRunner.runTask(readTask(body))
+        val task = taskRunner.runTask(readTask(body))
+
+        channel.basicPublish(
+                "",
+                properties?.replyTo,
+                null,
+                JsonUtil().toJson(task).toByteArray(Charset.forName("UTF-8")))
+
         if (envelope != null)
             channel.basicAck(envelope.deliveryTag, false)
+
     }
 
     private fun readTask(body: ByteArray?): Task {
+
         if (body == null) throw Exception("Empty body")
         return JsonUtil().fromJson(String(body, Charset.forName("UTF-8")))
     }
