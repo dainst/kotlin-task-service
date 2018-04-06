@@ -4,6 +4,7 @@ import org.dainst.tasks.common.createRabbitMqConnection
 
 
 const val TOPIC_EXCHANGE_NAME = "tasks"
+const val WORKER_QUEUE_NAME = "generic-tasks"
 
 class Application {
 
@@ -12,9 +13,9 @@ class Application {
         val connection = createRabbitMqConnection()
         val channel = connection.createChannel()
         channel.exchangeDeclare(TOPIC_EXCHANGE_NAME, "topic", true)
-        val queueName = channel.queueDeclare().queue
-        channel.queueBind(queueName, TOPIC_EXCHANGE_NAME, "task.*.queued")
-        channel.basicConsume(queueName, false, TaskConsumer(channel, TaskRunner()))
+        channel.queueDeclare(WORKER_QUEUE_NAME, true, false, false, null).queue
+        channel.queueBind(WORKER_QUEUE_NAME, TOPIC_EXCHANGE_NAME, "task.*.queued")
+        channel.basicConsume(WORKER_QUEUE_NAME, false, TaskConsumer(channel, TaskRunner()))
         channel.basicQos(1)
 
         println(" [*] Waiting for tasks. To exit press CTRL+C")
