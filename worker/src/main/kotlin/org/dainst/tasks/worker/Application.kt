@@ -10,17 +10,14 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 const val QUEUE_NAME = "tasks";
 
-@SpringBootApplication(scanBasePackages = ["org.dainst.tasks.common", "org.dainst.tasks.worker"])
-@EnableMongoRepositories("org.dainst.tasks.common")
 class Application {
 
-    @Bean
-    fun init(taskRunner: TaskRunner) = CommandLineRunner {
+    fun run() {
 
         val connection = createRabbitMqConnection()
         val channel = connection.createChannel()
         channel.queueDeclare(QUEUE_NAME, false, false, false, null)
-        channel.basicConsume(QUEUE_NAME, false, TaskConsumer(channel, taskRunner))
+        channel.basicConsume(QUEUE_NAME, false, TaskConsumer(channel, TaskRunner()))
         channel.basicQos(1)
 
         println(" [*] Waiting for tasks. To exit press CTRL+C")
@@ -29,5 +26,6 @@ class Application {
 }
 
 fun main(args: Array<String>) {
-    SpringApplication.run(Application::class.java, *args)
+
+    Application().run()
 }

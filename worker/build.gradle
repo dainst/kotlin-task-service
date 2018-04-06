@@ -3,11 +3,29 @@ version "0.1.0"
 
 apply plugin: "kotlin"
 apply plugin: "kotlin-spring"
-apply plugin: "org.springframework.boot"
 
-bootJar {
-    mainClassName = "org.dainst.tasks.worker.ApplicationKt"
+buildscript {
+
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath "com.github.jengelman.gradle.plugins:shadow:2.0.3"
+    }
+}
+
+apply plugin: "com.github.johnrengelman.shadow"
+apply plugin: "application"
+
+mainClassName = "org.dainst.tasks.worker.ApplicationKt"
+
+shadowJar {
     archiveName = "worker.jar"
+}
+
+assemble {
+    dependsOn shadowJar
 }
 
 dependencies {
