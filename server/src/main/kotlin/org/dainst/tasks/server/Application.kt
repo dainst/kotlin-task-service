@@ -1,6 +1,5 @@
 package org.dainst.tasks.server
 
-import org.dainst.tasks.common.TaskService
 import org.springframework.amqp.core.Binding
 import org.springframework.amqp.core.BindingBuilder
 import org.springframework.amqp.core.Queue
@@ -15,7 +14,6 @@ import org.springframework.context.annotation.Bean
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories
 
 const val TOPIC_EXCHANGE_NAME = "tasks"
-const val TASK_QUEUE_NAME = "queued-tasks"
 const val REPLY_QUEUE_NAME = "finished-tasks"
 
 @SpringBootApplication(scanBasePackages = ["org.dainst.tasks.common", "org.dainst.tasks.server"])
