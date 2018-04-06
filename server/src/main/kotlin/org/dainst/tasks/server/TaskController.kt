@@ -1,6 +1,7 @@
 package org.dainst.tasks.server
 
 import org.dainst.tasks.common.*
+import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.web.bind.annotation.*
 import org.springframework.beans.factory.annotation.Autowired
 import java.util.*
@@ -14,18 +15,19 @@ class TaskController {
     lateinit var taskService: TaskService
 
     @Autowired
-    lateinit var taskQueueService: TaskQueueService
+    lateinit var rabbitTemplate: RabbitTemplate
 
     @PostMapping("/create/{name}")
     fun create(@PathVariable name: String): String {
 
         val id = UUID.randomUUID()
         val task = Task(id.toString(), name, "queued")
-        taskQueueService.enqueue(task)
+        val json = JsonUtil().toJson(task)
+        rabbitTemplate.convertAndSend(TOPIC_EXCHANGE_NAME, "task.$name.queued", json)
         taskService.save(task)
         println(" [x] Enqueued '$task'")
 
-        return JsonUtil().toJson(task)
+        return json
     }
 
     @GetMapping("/status/{id}")

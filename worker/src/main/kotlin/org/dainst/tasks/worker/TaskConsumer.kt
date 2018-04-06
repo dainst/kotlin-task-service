@@ -15,8 +15,8 @@ class TaskConsumer(channel: Channel, private val taskRunner: TaskRunner) : Defau
         val task = taskRunner.runTask(readTask(body))
 
         channel.basicPublish(
-                "",
-                properties?.replyTo,
+                TOPIC_EXCHANGE_NAME,
+                "task.${task.name}.finished",
                 null,
                 JsonUtil().toJson(task).toByteArray(Charset.forName("UTF-8")))
 
